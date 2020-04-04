@@ -3,6 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Staudenmeir\LaravelUpsert\Eloquent\HasUpsertQueries;
 
 /**
@@ -34,6 +35,7 @@ use Staudenmeir\LaravelUpsert\Eloquent\HasUpsertQueries;
 class Guide extends Model
 {
     use HasUpsertQueries;
+    use SoftDeletes;
 
     protected $table = 'channel_guides';
 }

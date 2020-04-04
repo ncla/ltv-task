@@ -22,6 +22,7 @@ class CreateChannelGuidesTable extends Migration
             $table->timestamp('starts');
             $table->timestamp('ends');
             $table->timestamps();
+            $table->softDeletes();
 
             $table->index(['date', 'channel_id', 'starts']);
         });

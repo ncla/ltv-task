@@ -13,7 +13,8 @@ use App\Transformer\LTV\ApiToDb\ChannelGuide as ChannelGuideTransformer;
 use App\Transformer\LTV\ApiToDb\Shows as ShowsTransformer;
 use App\Transformer\LTV\ApiToDb\Channel as ChannelTransformer;
 
-class UpdateProgrammeAndChannels extends Command
+
+class UpdateTelevisionProgramme extends Command
 {
     /**
      * The name and signature of the console command.
@@ -34,9 +35,25 @@ class UpdateProgrammeAndChannels extends Command
      */
     protected $requestClient;
 
+    /**
+     * @var \Illuminate\Support\Collection
+     */
     protected $channels;
+
+    /**
+     * @var \Illuminate\Support\Collection
+     */
     protected $shows;
+
+    /**
+     * @var \Illuminate\Support\Collection
+     */
     protected $guides;
+
+    /**
+     * @var \Illuminate\Support\Collection
+     */
+    protected $days;
 
     /**
      * Create a new command instance.
@@ -52,6 +69,7 @@ class UpdateProgrammeAndChannels extends Command
         $this->channels = collect();
         $this->shows = collect();
         $this->guides = collect();
+        $this->days = collect();
     }
 
     /**
@@ -81,6 +99,8 @@ class UpdateProgrammeAndChannels extends Command
         foreach ($responseParsed->data->daylist as $day) {
             $apiResponse = $this->requestClient->request('GET', config('services.ltv.api.url') . '&date=' . $day->day);
 
+            $this->days->push($day->day);
+
             $responseParsedDay = json_decode($apiResponse->getBody());
 
             foreach ($responseParsedDay->data->guide as $channelAndGuide) {
@@ -103,6 +123,16 @@ class UpdateProgrammeAndChannels extends Command
         Channel::upsert($this->channels->toArray(), 'id');
         Show::upsert($this->shows->toArray(), 'id');
         Guide::upsert($this->guides->toArray(), 'id');
+
+        $this->info('Cleaning up deleted entries');
+
+        $guideIdsFromAPI = $this->guides->pluck('id');
+        $guideIdsInDatabase = Guide::whereIn('date', $this->days->toArray())->select('id')->get()->pluck('id');
+        $diff = $guideIdsInDatabase->diff($guideIdsFromAPI);
+
+        Guide::whereIn('id', $diff->toArray())->update([
+            'deleted_at' => now()->format('Y-m-d H:i:s'),
+        ]);
 
         $this->info('Done');
     }
