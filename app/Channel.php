@@ -26,4 +26,12 @@ class Channel extends Model
     use HasUpsertQueries;
 
     protected $table = 'channels';
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function guides()
+    {
+        return $this->hasMany('App\Guide', 'channel_id');
+    }
 }

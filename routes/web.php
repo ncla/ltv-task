@@ -12,5 +12,8 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('guides.index');
 });
+
+Route::get('/guide', 'ChannelGuideController@index')->name('guides.index');
+Route::get('/guide/{guide}', 'ChannelGuideController@show')->name('guides.show');

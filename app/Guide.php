@@ -38,4 +38,20 @@ class Guide extends Model
     use SoftDeletes;
 
     protected $table = 'channel_guides';
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function show()
+    {
+        return $this->hasOne('App\Show', 'id', 'show_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function channel()
+    {
+        return $this->hasOne('App\Channel', 'id', 'channel_id');
+    }
 }

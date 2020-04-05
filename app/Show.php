@@ -28,4 +28,12 @@ class Show extends Model
     use HasUpsertQueries;
 
     protected $table = 'shows';
+
+    /**
+     * @return string
+     */
+    public function getLogoUrlAttribute(): string
+    {
+        return '//ltv.lsm.lv/' . $this->logo_large;
+    }
 }
