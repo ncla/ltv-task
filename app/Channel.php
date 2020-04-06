@@ -12,9 +12,11 @@ use Staudenmeir\LaravelUpsert\Eloquent\HasUpsertQueries;
  * @property string $title
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Channel newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Channel newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Channel query()
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Guide[] $guides
+ * @property-read int|null $guides_count
+ * @method static \Staudenmeir\LaravelUpsert\Eloquent\Builder|\App\Channel newModelQuery()
+ * @method static \Staudenmeir\LaravelUpsert\Eloquent\Builder|\App\Channel newQuery()
+ * @method static \Staudenmeir\LaravelUpsert\Eloquent\Builder|\App\Channel query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Channel whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Channel whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Channel whereTitle($value)
@@ -25,6 +27,9 @@ class Channel extends Model
 {
     use HasUpsertQueries;
 
+    /**
+     * @var string
+     */
     protected $table = 'channels';
 
     /**

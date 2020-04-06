@@ -16,5 +16,8 @@
 <div class="container mx-auto p-4">
     @yield('content')
 </div>
+
+<script src="{{ mix('/js/app.js') }}"></script>
+
 </body>
 </html>

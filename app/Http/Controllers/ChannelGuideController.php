@@ -43,6 +43,7 @@ class ChannelGuideController extends Controller
         return view('guides.index', [
             'channels' => $channelsWithGuides,
             'daysSelection' => $upcomingGuideDates,
+            'date' => $dateForGuides,
         ]);
     }
 
@@ -51,6 +52,8 @@ class ChannelGuideController extends Controller
         $otherBroadCastTimes = Guide::with('channel')
             ->orderBy('starts', 'asc')
             ->where('show_id', $guide->show_id)
+            ->where('starts', '>=', (new DateTime())->format('Y-m-d'))
+            ->where('id', '!=', $guide->id)
             ->get();
 
         return view('guides.show', [

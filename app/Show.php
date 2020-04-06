@@ -13,9 +13,10 @@ use Staudenmeir\LaravelUpsert\Eloquent\HasUpsertQueries;
  * @property string $logo_large
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Show newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Show newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|\App\Show query()
+ * @property-read string $logo_url
+ * @method static \Staudenmeir\LaravelUpsert\Eloquent\Builder|\App\Show newModelQuery()
+ * @method static \Staudenmeir\LaravelUpsert\Eloquent\Builder|\App\Show newQuery()
+ * @method static \Staudenmeir\LaravelUpsert\Eloquent\Builder|\App\Show query()
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Show whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Show whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Show whereLogoLarge($value)
@@ -27,6 +28,9 @@ class Show extends Model
 {
     use HasUpsertQueries;
 
+    /**
+     * @var string
+     */
     protected $table = 'shows';
 
     /**

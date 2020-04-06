@@ -1,16 +1,16 @@
 @extends('layout.app')
 
 @section('content')
-    <h1 class="text-3xl">{{ __('guide.programme') }}</h1>
+    <h1 class="text-3xl">{{ __('guide.programme') }} - {{ $date }}</h1>
 
     @if($daysSelection)
         <div class="mb-3">
-                        <span>
-                            <span class="text-sm">{{ __('guide.programme_dates') }}:</span>
-                            @foreach($daysSelection as $date)
-                                <a href="{{ route('guides.index', ['date' => $date]) }}" class="text-xs text-blue-500 hover:underline">{{ $date }}</a>
-                            @endforeach
-                        </span>
+            <span>
+                <span class="text-sm">{{ __('guide.programme_dates') }}:</span>
+                @foreach($daysSelection as $date)
+                    <a href="{{ route('guides.index', ['date' => $date]) }}" class="text-xs text-blue-500 hover:underline">{{ $date }}</a>
+                @endforeach
+            </span>
         </div>
     @endif
 
@@ -32,7 +32,7 @@
                                 {{ $guide->title }}
                             @endif
                         </div>
-                        <div class="text-xs text-gray-600">{{ $guide->starts }}</div>
+                        <div class="text-xs text-gray-600" data-timestamp-to-local="{{ $guide->starts }}" data-datetime-format="HH:mm">{{ $guide->formattedStartTime }}</div>
                     </div>
                 @endforeach
             </div>
