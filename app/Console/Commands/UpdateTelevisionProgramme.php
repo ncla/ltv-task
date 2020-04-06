@@ -13,7 +13,6 @@ use App\Transformer\LTV\ApiToDb\ChannelGuide as ChannelGuideTransformer;
 use App\Transformer\LTV\ApiToDb\Shows as ShowsTransformer;
 use App\Transformer\LTV\ApiToDb\Channel as ChannelTransformer;
 
-
 class UpdateTelevisionProgramme extends Command
 {
     /**
@@ -104,15 +103,16 @@ class UpdateTelevisionProgramme extends Command
             $responseParsedDay = json_decode($apiResponse->getBody());
 
             foreach ($responseParsedDay->data->guide as $channelAndGuide) {
-                $this->channels->put((int) $channelAndGuide->channel->id, ChannelTransformer::transform($channelAndGuide->channel));
+                $this->channels->put((int)$channelAndGuide->channel->id,
+                    ChannelTransformer::transform($channelAndGuide->channel));
 
                 foreach ($channelAndGuide->guide as $guide) {
-                    $this->guides->put((int) $guide->id, ChannelGuideTransformer::transform($guide));
+                    $this->guides->put((int)$guide->id, ChannelGuideTransformer::transform($guide));
 
                     $show = $guide->show;
 
                     if ($show !== false) {
-                        $this->shows->put((int) $show->id, ShowsTransformer::transform($show));
+                        $this->shows->put((int)$show->id, ShowsTransformer::transform($show));
                     }
                 }
             }
@@ -122,7 +122,11 @@ class UpdateTelevisionProgramme extends Command
 
         Channel::upsert($this->channels->toArray(), 'id');
         Show::upsert($this->shows->toArray(), 'id');
-        Guide::upsert($this->guides->toArray(), 'id');
+
+        foreach ($this->guides->chunk(500) as $guidesChunk) {
+            /** @var \Illuminate\Support\Collection $guidesChunk */
+            Guide::upsert($guidesChunk->toArray(), 'id');
+        }
 
         $this->info('Cleaning up deleted entries');
 
