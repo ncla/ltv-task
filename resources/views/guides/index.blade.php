@@ -3,7 +3,7 @@
 @section('content')
     <h1 class="text-3xl">{{ __('guide.programme') }} - {{ $date }}</h1>
 
-    @if($daysSelection)
+    @if(count($daysSelection) !== 0)
         <div class="mb-3">
             <span>
                 <span class="text-sm">{{ __('guide.programme_dates') }}:</span>

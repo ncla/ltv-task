@@ -12,6 +12,8 @@ We use [Laradock](https://laradock.io/getting-started/), make sure you have Dock
     2. `npm install`
     3. `npm run prod`
     4. `php artisan key:generate`
-    5. Optional: `php artisan ltv:update` to update television guides
+    5. `php artisan migrate`
+    6. `php artisan ltv:update` to update television guides
 7. Visit http://localhost to view the project
-8. You should be able to see television guide without running update command manually since the Docker container runs Laravel scheduler every minute to update the guide
+
+You should be able to see television guide without running update command manually since the Docker container runs Laravel scheduler every minute to update the guide
