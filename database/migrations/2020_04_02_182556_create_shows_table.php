@@ -17,6 +17,7 @@ class CreateShowsTable extends Migration
             $table->bigInteger('id')->primary();
             $table->string('title');
             $table->string('logo_large');
+            $table->boolean('active');
             $table->timestamps();
         });
     }

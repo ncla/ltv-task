@@ -11,12 +11,14 @@ use Staudenmeir\LaravelUpsert\Eloquent\HasUpsertQueries;
  * @property int $id
  * @property string $title
  * @property string $logo_large
+ * @property bool $active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read string $logo_url
  * @method static \Staudenmeir\LaravelUpsert\Eloquent\Builder|\App\Show newModelQuery()
  * @method static \Staudenmeir\LaravelUpsert\Eloquent\Builder|\App\Show newQuery()
  * @method static \Staudenmeir\LaravelUpsert\Eloquent\Builder|\App\Show query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\App\Show whereActive($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Show whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Show whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\App\Show whereLogoLarge($value)
@@ -32,6 +34,13 @@ class Show extends Model
      * @var string
      */
     protected $table = 'shows';
+
+    /**
+     * @var array
+     */
+    protected $casts = [
+        'active' => 'boolean',
+    ];
 
     /**
      * @return string

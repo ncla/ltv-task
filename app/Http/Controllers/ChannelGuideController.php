@@ -31,7 +31,8 @@ class ChannelGuideController extends Controller
                  */
                 $query->where('date', $dateForGuides)
                     ->orderBy('starts', 'asc');
-            }
+            },
+            'guides.show'
         ])->get();
 
         $upcomingGuideDates = Guide::where('date', '>=', $todaysDate)
@@ -49,6 +50,10 @@ class ChannelGuideController extends Controller
 
     public function show(Guide $guide)
     {
+        if (!$guide->hasActiveShow()) {
+            return abort(404);
+        }
+
         $otherBroadCastTimes = Guide::with('channel')
             ->orderBy('starts', 'asc')
             ->where('show_id', $guide->show_id)

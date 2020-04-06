@@ -26,7 +26,7 @@
                 @foreach($channel->guides as $guide)
                     <div class="mb-1">
                         <div class="text-md text-gray-800">
-                            @if($guide->show_id)
+                            @if($guide->hasActiveShow())
                                 <a href="{{ route('guides.show', $guide) }}" class="hover:text-blue-500 hover:underline">{{ $guide->title }}</a>
                             @else
                                 {{ $guide->title }}

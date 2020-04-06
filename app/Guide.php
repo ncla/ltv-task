@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Staudenmeir\LaravelUpsert\Eloquent\HasUpsertQueries;
 
-
 /**
  * App\Guide
  *
@@ -21,10 +20,10 @@ use Staudenmeir\LaravelUpsert\Eloquent\HasUpsertQueries;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Channel $channel
- * @property-read mixed $formatted_end_time
- * @property-read mixed $formatted_full_date_time
- * @property-read mixed $formatted_start_date_time
- * @property-read mixed $formatted_start_time
+ * @property-read string $formatted_end_time
+ * @property-read string $formatted_full_date_time
+ * @property-read string $formatted_start_date_time
+ * @property-read string $formatted_start_time
  * @property-read \App\Show $show
  * @method static bool|null forceDelete()
  * @method static \Staudenmeir\LaravelUpsert\Eloquent\Builder|\App\Guide newModelQuery()
@@ -110,5 +109,13 @@ class Guide extends Model
     public function getFormattedFullDateTimeAttribute(): string
     {
         return $this->starts->format('m-d H:i:s');
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasActiveShow()
+    {
+        return $this->show_id !== null && $this->show->active === true;
     }
 }

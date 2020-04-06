@@ -12,6 +12,7 @@ class Shows
             'id' => (int) $show->id,
             'title' => (string) $show->title,
             'logo_large' => (string) $show->logo_large,
+            'active' => (boolean) $show->active,
         ];
     }
 }
