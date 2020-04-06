@@ -2,68 +2,61 @@
 
 namespace App\Http\Controllers;
 
-use App\Channel;
 use App\Guide;
-use DateInterval;
-use DateTime;
-use DateTimeZone;
+use App\Helpers\GuideDateTime;
+use App\Repositories\GuidesRepository;
 use Illuminate\Http\Request;
 
 class ChannelGuideController extends Controller
 {
+    protected $guidesRepository;
+
+    public function __construct()
+    {
+        $this->guidesRepository = new GuidesRepository();
+    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @throws \Exception
+     */
     public function index(Request $request)
     {
-        $dateTimeNow = (new DateTime())->setTimezone(new DateTimeZone('Europe/Riga'));
-        $dateTimeMorning = (new DateTime())->setTimezone(new DateTimeZone('Europe/Riga'))->setTime(6, 0);
+        $todaysDate = GuideDateTime::getTodaysGuideDate();
+        $dateForGuides = $request->get('date', $todaysDate) ?? $todaysDate;
 
-        if ($dateTimeNow >= $dateTimeMorning) {
-            $todaysDate = $dateTimeNow->format('Y-m-d');
-        } else {
-            $todaysDate = $dateTimeNow->sub(new DateInterval('P1D'))->format('Y-m-d');
+        $channels = $this->guidesRepository->getChannelsWithGuides($dateForGuides);
+
+        $guideCount = $channels->sum(function ($channel) {
+            return count($channel['guides']);
+        });
+
+        if ($request->get('date') !== null && $guideCount === 0) {
+            abort(404);
         }
 
-        $dateForGuides = $request->get('date', $todaysDate);
-
-        $channelsWithGuides = Channel::with([
-            'guides' => function ($query) use ($dateForGuides) {
-                /**
-                 * @var $query \Illuminate\Database\Query\Builder;
-                 */
-                $query->where('date', $dateForGuides)
-                    ->orderBy('starts', 'asc');
-            },
-            'guides.show'
-        ])->get();
-
-        $upcomingGuideDates = Guide::where('date', '>=', $todaysDate)
-            ->select(['date'])
-            ->distinct('date')
-            ->orderBy('date', 'asc')
-            ->pluck('date');
-
         return view('guides.index', [
-            'channels' => $channelsWithGuides,
-            'daysSelection' => $upcomingGuideDates,
+            'channels' => $channels,
+            'daysSelection' => $this->guidesRepository->getUpcomingAvailableGuidesDates($todaysDate),
             'date' => $dateForGuides,
         ]);
     }
 
+    /**
+     * @param Guide $guide
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View|void
+     * @throws \Exception
+     */
     public function show(Guide $guide)
     {
         if (!$guide->hasActiveShow()) {
             return abort(404);
         }
 
-        $otherBroadCastTimes = Guide::with('channel')
-            ->orderBy('starts', 'asc')
-            ->where('show_id', $guide->show_id)
-            ->where('starts', '>=', (new DateTime())->format('Y-m-d'))
-            ->where('id', '!=', $guide->id)
-            ->get();
-
         return view('guides.show', [
             'guide' => $guide,
-            'otherBroadCastTimes' => $otherBroadCastTimes
+            'otherBroadCastTimes' => $this->guidesRepository->getOtherBroadCasts($guide->show_id, $guide->id)
         ]);
     }
 }
