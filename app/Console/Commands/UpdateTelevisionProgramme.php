@@ -4,14 +4,14 @@ namespace App\Console\Commands;
 
 use App\Channel;
 use App\Guide;
+use App\Helpers\SimpleGetJsonRequestInterface;
 use App\Show;
-use DateTime;
-use DateTimeZone;
-use GuzzleHttp\ClientInterface;
-use Illuminate\Console\Command;
+use App\Transformer\LTV\ApiToDb\Channel as ChannelTransformer;
 use App\Transformer\LTV\ApiToDb\ChannelGuide as ChannelGuideTransformer;
 use App\Transformer\LTV\ApiToDb\Shows as ShowsTransformer;
-use App\Transformer\LTV\ApiToDb\Channel as ChannelTransformer;
+use DateTime;
+use DateTimeZone;
+use Illuminate\Console\Command;
 
 class UpdateTelevisionProgramme extends Command
 {
@@ -30,7 +30,7 @@ class UpdateTelevisionProgramme extends Command
     protected $description = 'Update programme, channels, shows';
 
     /**
-     * @var ClientInterface
+     * @var SimpleGetJsonRequestInterface
      */
     protected $requestClient;
 
@@ -57,9 +57,9 @@ class UpdateTelevisionProgramme extends Command
     /**
      * Create a new command instance.
      *
-     * @param ClientInterface $requestClient
+     * @param SimpleGetJsonRequestInterface $requestClient
      */
-    public function __construct(ClientInterface $requestClient)
+    public function __construct(SimpleGetJsonRequestInterface $requestClient)
     {
         parent::__construct();
 
@@ -76,7 +76,6 @@ class UpdateTelevisionProgramme extends Command
      *
      * @return mixed
      * @throws \Exception
-     * @throws \GuzzleHttp\Exception\GuzzleException
      */
     public function handle()
     {
@@ -91,18 +90,14 @@ class UpdateTelevisionProgramme extends Command
 
         $currentDate = (new DateTime())->setTimezone(new DateTimeZone('Europe/Riga'))->format('Y-m-d');
 
-        $apiResponse = $this->requestClient->request('GET', config('services.ltv.api.url') . '&date=' . $currentDate);
+        $apiResponse = $this->requestClient->getJson(config('services.ltv.api.url') . '&date=' . $currentDate);
 
-        $responseParsed = json_decode($apiResponse->getBody());
-
-        foreach ($responseParsed->data->daylist as $day) {
-            $apiResponse = $this->requestClient->request('GET', config('services.ltv.api.url') . '&date=' . $day->day);
+        foreach ($apiResponse->data->daylist as $day) {
+            $apiResponse = $this->requestClient->getJson(config('services.ltv.api.url') . '&date=' . $day->day);
 
             $this->days->push($day->day);
 
-            $responseParsedDay = json_decode($apiResponse->getBody());
-
-            foreach ($responseParsedDay->data->guide as $channelAndGuide) {
+            foreach ($apiResponse->data->guide as $channelAndGuide) {
                 $this->channels->put((int)$channelAndGuide->channel->id,
                     ChannelTransformer::transform($channelAndGuide->channel));
 

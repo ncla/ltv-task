@@ -12,7 +12,7 @@ class AppServiceProvider extends ServiceProvider
      * @var array
      */
     public $bindings = [
-        \GuzzleHttp\ClientInterface::class => \GuzzleHttp\Client::class,
+        \App\Helpers\SimpleGetJsonRequestInterface::class => \App\Helpers\FileGetContentsSimpleGetJsonRequest::class,
     ];
 
     /**
