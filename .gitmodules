@@ -1,4 +1,3 @@
-kk
 [submodule "laradock-ltv"]
 	path = laradock-ltv
 	url = https://github.com/Laradock/laradock.git
